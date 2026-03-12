@@ -1,12 +1,12 @@
 import asyncpg
-from config import DATABASE_URL
+import os
 
 pool = None
 
 async def connect():
     global pool
-    pool = await asyncpg.create_pool(postgresql://postgres:rIabJsYSsNSETCAGpuqkPyhtZXPrjcOI@metro.proxy.rlwy.net:15476/railway)
-
+    pool = await asyncpg.create_pool(os.getenv("postgresql://postgres:rIabJsYSsNSETCAGpuqkPyhtZXPrjcOI@metro.proxy.rlwy.net:15476/railway
+"))
 
 async def create_tables():
 
