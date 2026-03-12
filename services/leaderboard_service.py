@@ -1,4 +1,8 @@
+from database import cursor
+from config import GROUP_ID
+
 LEADERBOARD_MESSAGE_ID = None
+
 
 async def update_leaderboard(bot):
 
@@ -14,21 +18,9 @@ async def update_leaderboard(bot):
         text += f"{i}. {u[0]} — {u[1]} invites\n"
 
     if LEADERBOARD_MESSAGE_ID:
+
         await bot.edit_message_text(
             text,
             GROUP_ID,
             LEADERBOARD_MESSAGE_ID
         )
-
-  from services.leaderboard_service import update_leaderboard
-
-async def add_invite(inviter_id, bot):
-
-    cursor.execute(
-        "UPDATE users SET invites = invites + 1 WHERE user_id=?",
-        (inviter_id,)
-    )
-
-    conn.commit()
-
-    await update_leaderboard(bot)
