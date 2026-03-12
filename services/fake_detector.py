@@ -1,11 +1,18 @@
-from datetime import datetime
+from database import cursor
 
-def is_fake_account(user):
+def is_fake(user):
 
+    # Bot check
     if user.is_bot:
         return True
 
-    if not user.username:
+    # Duplicate check
+    cursor.execute(
+        "SELECT user_id FROM users WHERE user_id=?",
+        (user.id,)
+    )
+
+    if cursor.fetchone():
         return True
 
     return False
