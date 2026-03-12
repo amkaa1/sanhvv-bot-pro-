@@ -5,9 +5,7 @@ pool = None
 
 async def connect():
     global pool
-    pool = await asyncpg.create_pool(os.getenv("postgresql://postgres:rIabJsYSsNSETCAGpuqkPyhtZXPrjcOI@metro.proxy.rlwy.net:15476/railway
-"))
-
+    pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
 async def create_tables():
 
     async with pool.acquire() as conn:
