@@ -1,7 +1,6 @@
 from database import cursor, conn
 from services.leaderboard_service import update_leaderboard
 
-
 async def add_invite(inviter_id, bot):
 
     cursor.execute(
