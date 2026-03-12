@@ -1,6 +1,8 @@
 from database import cursor, conn
+from services.leaderboard_service import update_leaderboard
 
-def add_invite(inviter_id):
+
+async def add_invite(inviter_id, bot):
 
     cursor.execute(
         "UPDATE users SET invites = invites + 1 WHERE user_id=?",
@@ -8,3 +10,5 @@ def add_invite(inviter_id):
     )
 
     conn.commit()
+
+    await update_leaderboard(bot)
