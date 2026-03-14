@@ -14,6 +14,16 @@ from middlewares.antiflood import AntiFloodMiddleware
 from utils.logger import logger
 
 
+from database.db import engine
+from database.models import Base
+
+from handlers import admin
+from handlers import menu
+from handlers import moderation
+from handlers import profile
+
+from utils.logger import logger
+
 WEBHOOK_PATH = f"/webhook/{settings.bot_token}"
 
 
