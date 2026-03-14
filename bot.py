@@ -8,33 +8,21 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 from config import settings
 from database.db import engine
 from database.models import Base
-from handlers import start, profile, rating, invite, leaderboard, report, admin, moderation
-from loader import bot, dp
-from middlewares.antiflood import AntiFloodMiddleware
-from utils.logger import logger
-
-
-from database.db import engine
-from database.models import Base
-
-from handlers import admin
-from handlers import menu
-from handlers import moderation
-from handlers import profile
-
+from handlers import admin, invite, leaderboard, moderation, profile, rating, report, start
+from services.antiflood import AntiFloodMiddleware
+from utils.loader import bot, dp
 from utils.logger import logger
 
 WEBHOOK_PATH = f"/webhook/{settings.bot_token}"
 
 
 async def on_startup() -> None:
-    # DB init
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
     webhook_base = os.getenv("WEBHOOK_BASE_URL") or os.getenv("RAILWAY_PUBLIC_DOMAIN")
     if not webhook_base:
-        raise RuntimeError("WEBHOOK_BASE_URL эсвэл RAILWAY_PUBLIC_DOMAIN тохируулаагүй байна.")
+        raise RuntimeError("WEBHOOK_BASE_URL or RAILWAY_PUBLIC_DOMAIN is not set.")
     webhook_base = webhook_base.rstrip("/")
     webhook_url = f"{webhook_base}{WEBHOOK_PATH}"
 
@@ -71,4 +59,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-

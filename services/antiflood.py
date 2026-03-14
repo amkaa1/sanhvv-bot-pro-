@@ -6,7 +6,12 @@ from aiogram.types import Message, TelegramObject
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db import SessionLocal
-from database.queries import get_or_create_user, get_recent_message_count, log_message, set_mute
+from database.queries import (
+    get_or_create_user,
+    get_recent_message_count,
+    log_message,
+    set_mute,
+)
 from utils.logger import logger
 
 
