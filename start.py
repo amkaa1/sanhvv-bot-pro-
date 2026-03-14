@@ -3,13 +3,12 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.db import SessionLocal
-from database.models import User
-from database.queries import get_or_create_user, increment_invite
+from db import SessionLocal
+from models import User
+from queries import get_or_create_user
 from keyboards.menu import main_menu
 from services.invite_tracker import build_invite_payload
 from services.reputation import get_trust_level, is_verified
-
 
 router = Router()
 
