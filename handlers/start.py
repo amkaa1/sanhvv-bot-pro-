@@ -1,7 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from database.db import pool
-from keyboards.menu import main_menu
 
 
 async def start_cmd(message: types.Message):
@@ -10,6 +9,12 @@ async def start_cmd(message: types.Message):
 
     user_id = message.from_user.id
     username = message.from_user.username
+
+    invited_by = None
+
+    if args:
+
+        invited_by = int(args)
 
     async with pool.acquire() as conn:
 
@@ -20,18 +25,9 @@ async def start_cmd(message: types.Message):
 
         if not user:
 
-            invited_by = None
-
-            if args:
-                invited_by = int(args)
-
             await conn.execute(
                 """
-                INSERT INTO users(
-                user_id,
-                username,
-                invited_by
-                )
+                INSERT INTO users(user_id,username,invited_by)
                 VALUES($1,$2,$3)
                 """,
                 user_id,
@@ -39,10 +35,7 @@ async def start_cmd(message: types.Message):
                 invited_by
             )
 
-    await message.answer(
-        "Welcome 👋",
-        reply_markup=main_menu()
-    )
+    await message.answer("Welcome 👋")
 
 
 def register(dp: Dispatcher):
