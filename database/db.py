@@ -8,8 +8,14 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+# 1️⃣ Railway environment variable авах
+DATABASE_URL = os.getenv("DATABASE_URL")
 
+# 2️⃣ asyncpg driver ашиглах
+if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+
+# 3️⃣ engine үүсгэх
 engine: AsyncEngine = create_async_engine(
     DATABASE_URL,
     echo=False,
