@@ -1,19 +1,32 @@
 from aiogram import types
-from database import cursor
+from aiogram.dispatcher import Dispatcher
+from database.db import pool
 
-def register(dp):
 
-    @dp.message_handler(commands=['topinvite'])
-    async def leaderboard(message: types.Message):
+async def leaderboard(message: types.Message):
 
-        cursor.execute("SELECT user_id, invites FROM users ORDER BY invites DESC LIMIT 10")
+    async with pool.acquire() as conn:
 
-        users = cursor.fetchall()
+        rows = await conn.fetch(
+            "SELECT * FROM users ORDER BY invites DESC LIMIT 10"
+        )
 
-        text = "Top Inviters\n\n"
+    text = "🏆 TOP INVITERS\n\n"
 
-        for i, u in enumerate(users, start=1):
+    rank = 1
 
-            text += f"{i}. {u[0]} — {u[1]} invites\n"
+    for r in rows:
 
-        await message.reply(text)
+        text += f"{rank}. {r['username']} — {r['invites']}\n"
+
+        rank += 1
+
+    await message.answer(text)
+
+
+def register(dp: Dispatcher):
+
+    dp.register_message_handler(
+        leaderboard,
+        commands=["topinvite"]
+    )
