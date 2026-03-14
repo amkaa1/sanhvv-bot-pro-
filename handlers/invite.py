@@ -1,20 +1,27 @@
 from aiogram import types
+from aiogram.dispatcher import Dispatcher
 
-def register(dp):
 
-    @dp.message_handler(commands=["invite"])
-    async def invite(message: types.Message):
+async def invite_cmd(message: types.Message):
 
-        user_id = message.from_user.id
+    user_id = message.from_user.id
 
-        link = f"https://t.me/sanhvvmgl2026_bot?start={user_id}"
+    link = f"https://t.me/sanhvv2026mgl?start={user_id}"
 
-        await message.reply(
-f"""
-Invite friends
-
-Your link:
+    text = f"""
+📨 Your Invite Link
 
 {link}
+
+Invite users to earn rewards
 """
-)
+
+    await message.answer(text)
+
+
+def register(dp: Dispatcher):
+
+    dp.register_message_handler(
+        invite_cmd,
+        commands=["invite"]
+    )
