@@ -1,15 +1,8 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-
+DATABASE_URL = os.getenv("DATABASE_URL")
 GROUP_ID = int(os.getenv("GROUP_ID"))
-
-
-ADMIN_IDS = [847622607]
-
-GOOD_TO_VERIFY = 50
-SCAM_REPORT_LIMIT = 3
-DAILY_VOTE_LIMIT = 2
-MAX_DAILY_VOTES = 2
-
-ACCOUNT_MIN_DAYS = 7
