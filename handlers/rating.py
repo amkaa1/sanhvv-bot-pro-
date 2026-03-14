@@ -1,31 +1,59 @@
 from aiogram import types
-from database import cursor, conn
-from config import GOOD_TO_VERIFY
+from aiogram.dispatcher import Dispatcher
+from database.db import pool
 
-def register(dp):
 
-    @dp.message_handler(commands=['rate'])
-    async def rate(message: types.Message):
+async def rate(message: types.Message):
 
-        args = message.text.split()
+    args = message.text.split()
 
-        if len(args) != 3:
-            return
+    if len(args) != 3:
 
-        target = int(args[1])
-        vote = args[2]
+        return await message.answer(
+            "/rate user_id good|bad"
+        )
 
-        if vote == "good":
-            cursor.execute("UPDATE users SET good = good + 1 WHERE user_id=?", (target,))
+    target = int(args[1])
+    rate_type = args[2]
+
+    voter = message.from_user.id
+
+    async with pool.acquire() as conn:
+
+        await conn.execute(
+            """
+            INSERT INTO ratings(
+            voter,
+            target,
+            type
+            )
+            VALUES($1,$2,$3)
+            """,
+            voter,
+            target,
+            rate_type
+        )
+
+        if rate_type == "good":
+
+            await conn.execute(
+                "UPDATE users SET good=good+1 WHERE user_id=$1",
+                target
+            )
+
         else:
-            cursor.execute("UPDATE users SET bad = bad + 1 WHERE user_id=?", (target,))
 
-        cursor.execute("SELECT good FROM users WHERE user_id=?", (target,))
-        good = cursor.fetchone()[0]
+            await conn.execute(
+                "UPDATE users SET bad=bad+1 WHERE user_id=$1",
+                target
+            )
 
-        if good >= GOOD_TO_VERIFY:
-            cursor.execute("UPDATE users SET verified = 1 WHERE user_id=?", (target,))
+    await message.answer("Vote recorded")
 
-        conn.commit()
 
-        await message.reply("Vote added")
+def register(dp: Dispatcher):
+
+    dp.register_message_handler(
+        rate,
+        commands=["rate"]
+    )
