@@ -1,3 +1,4 @@
+import os
 from collections.abc import AsyncIterator
 
 from sqlalchemy.ext.asyncio import (
@@ -7,11 +8,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from config import settings
-
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine: AsyncEngine = create_async_engine(
-    settings.database_url,
+    DATABASE_URL,
     echo=False,
     pool_pre_ping=True,
 )
@@ -22,8 +22,6 @@ SessionLocal = async_sessionmaker(
     class_=AsyncSession,
 )
 
-
 async def get_session() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         yield session
-
