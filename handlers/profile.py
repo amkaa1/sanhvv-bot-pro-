@@ -1,29 +1,40 @@
 from aiogram import types
-from database import cursor
+from aiogram.dispatcher import Dispatcher
+from database.db import pool
 
-def register(dp):
 
-    @dp.message_handler(commands=['profile'])
-    async def profile(message: types.Message):
+async def profile_cmd(message: types.Message):
 
-        user_id = message.from_user.id
+    user_id = message.from_user.id
 
-        cursor.execute("SELECT invites,good,bad,verified FROM users WHERE user_id=?", (user_id,))
-        data = cursor.fetchone()
+    async with pool.acquire() as conn:
 
-        invites, good, bad, verified = data
+        user = await conn.fetchrow(
+            "SELECT * FROM users WHERE user_id=$1",
+            user_id
+        )
 
-        badge = "✅ Verified" if verified else "❌ Not verified"
+    if not user:
 
-        text = f"""
-ID: {user_id}
+        return await message.answer("Profile not found")
 
-Invites: {invites}
+    text = f"""
+👤 Profile
 
-Good: {good}
-Bad: {bad}
+Invites: {user['invites']}
 
-Status: {badge}
+Good: {user['good']}
+Bad: {user['bad']}
+
+Verified: {user['verified']}
 """
 
-        await message.reply(text)
+    await message.answer(text)
+
+
+def register(dp: Dispatcher):
+
+    dp.register_message_handler(
+        profile_cmd,
+        commands=["profile"]
+    )
