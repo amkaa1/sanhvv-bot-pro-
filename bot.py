@@ -1,18 +1,8 @@
-from aiogram import Bot, Dispatcher, executor
-from config import BOT_TOKEN
+import os
+from dotenv import load_dotenv
 
-from handlers import start, invite, profile, rating, leaderboard, scam_report, admin
+load_dotenv()
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(bot)
-
-start.register(dp)
-invite.register(dp)
-profile.register(dp)
-rating.register(dp)
-leaderboard.register(dp)
-scam_report.register(dp)
-admin.register(dp)
-
-if __name__ == "__main__":
-    executor.start_polling(dp)
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+DATABASE_URL = os.getenv("DATABASE_URL")
+GROUP_ID = int(os.getenv("GROUP_ID"))
