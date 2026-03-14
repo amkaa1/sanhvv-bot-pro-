@@ -1,37 +1,53 @@
 from aiogram import types
-from database import cursor, conn
-from datetime import datetime
+from aiogram.dispatcher import Dispatcher
+from database.db import pool
+from keyboards.menu import main_menu
 
-def register(dp):
 
-    @dp.message_handler(commands=["start"])
-    async def start(message: types.Message):
+async def start_cmd(message: types.Message):
 
-        user_id = message.from_user.id
-        ref = message.get_args()
+    args = message.get_args()
 
-        cursor.execute("SELECT user_id FROM users WHERE user_id=?", (user_id,))
-        exists = cursor.fetchone()
+    user_id = message.from_user.id
+    username = message.from_user.username
 
-        if not exists:
+    async with pool.acquire() as conn:
+
+        user = await conn.fetchrow(
+            "SELECT * FROM users WHERE user_id=$1",
+            user_id
+        )
+
+        if not user:
 
             invited_by = None
 
-            if ref.isdigit():
+            if args:
+                invited_by = int(args)
 
-                invited_by = int(ref)
-
-                if invited_by != user_id:
-                    cursor.execute(
-                        "UPDATE users SET invites = invites + 1 WHERE user_id=?",
-                        (invited_by,)
-                    )
-
-            cursor.execute(
-                "INSERT INTO users VALUES(?,?,?,?,?,?,?)",
-                (user_id, invited_by, 0, 0, 0, 0, datetime.now())
+            await conn.execute(
+                """
+                INSERT INTO users(
+                user_id,
+                username,
+                invited_by
+                )
+                VALUES($1,$2,$3)
+                """,
+                user_id,
+                username,
+                invited_by
             )
 
-            conn.commit()
+    await message.answer(
+        "Welcome 👋",
+        reply_markup=main_menu()
+    )
 
-        await message.answer("Bot activated.")
+
+def register(dp: Dispatcher):
+
+    dp.register_message_handler(
+        start_cmd,
+        commands=["start"]
+    )
