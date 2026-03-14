@@ -1,38 +1,47 @@
-import sqlite3
+import asyncpg
+from config import DATABASE_URL
 
-conn = sqlite3.connect("bot.db")
-cursor = conn.cursor()
+pool = None
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS users(
-user_id INTEGER PRIMARY KEY,
-invited_by INTEGER,
-invites INTEGER DEFAULT 0,
-good INTEGER DEFAULT 0,
-bad INTEGER DEFAULT 0,
-verified INTEGER DEFAULT 0
-)
-""")
+async def connect():
+    global pool
+    pool = await asyncpg.create_pool(DATABASE_URL)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS votes(
-voter INTEGER,
-target INTEGER,
-date TEXT
-)
-""")
+async def create_tables():
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS scam_reports(
-reporter INTEGER,
-target INTEGER
-)
-""")
+    async with pool.acquire() as conn:
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS blacklist(
-user_id INTEGER PRIMARY KEY
-)
-""")
+        await conn.execute("""
 
-conn.commit()
+        CREATE TABLE IF NOT EXISTS users(
+            user_id BIGINT PRIMARY KEY,
+            username TEXT,
+            invited_by BIGINT,
+            invites INT DEFAULT 0,
+            good INT DEFAULT 0,
+            bad INT DEFAULT 0,
+            verified BOOLEAN DEFAULT FALSE
+        )
+
+        """)
+
+        await conn.execute("""
+
+        CREATE TABLE IF NOT EXISTS invites(
+            inviter BIGINT,
+            invited BIGINT,
+            valid BOOLEAN DEFAULT TRUE
+        )
+
+        """)
+
+        await conn.execute("""
+
+        CREATE TABLE IF NOT EXISTS ratings(
+            voter BIGINT,
+            target BIGINT,
+            type TEXT,
+            time TIMESTAMP DEFAULT NOW()
+        )
+
+        """)
