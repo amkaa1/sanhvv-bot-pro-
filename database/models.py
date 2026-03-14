@@ -39,7 +39,7 @@ async def create_tables():
 
         inviter BIGINT,
         invited BIGINT,
-        valid BOOLEAN DEFAULT TRUE
+        time TIMESTAMP DEFAULT NOW()
 
         )
 
