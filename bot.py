@@ -29,7 +29,7 @@ async def on_startup(dp):
     profile.register(dp)
     leaderboard.register(dp)
     rating.register(dp)
-
+    join.register(dp)
 
 if __name__ == "__main__":
 
