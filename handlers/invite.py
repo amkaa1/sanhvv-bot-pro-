@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from loader import bot
 from services.invite_tracker import get_personal_invite_link
+from utils.loader import bot
 
 
 router = Router()

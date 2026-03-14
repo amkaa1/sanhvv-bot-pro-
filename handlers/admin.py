@@ -3,10 +3,10 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from analytics.stats import build_stats_text
 from database.db import SessionLocal
-from filters.admin_filter import AdminFilter
-from keyboards.admin_menu import admin_menu
+from handlers.admin_filter import AdminFilter
+from handlers.admin_menu import admin_menu
+from handlers.stats import build_stats_text
 
 
 router = Router()

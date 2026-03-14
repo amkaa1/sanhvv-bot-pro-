@@ -41,7 +41,7 @@ class Settings:
 def load_settings() -> Settings:
     bot_token = _get_env("BOT_TOKEN")
     database_url = _get_env("DATABASE_URL")
-    group_id = int(_get_env("GROUP_ID"))
+    group_id = int(_get_env("GROUP_ID", default="0", required=False))
     admin_ids = _parse_admin_ids(os.getenv("ADMIN_IDS"))
     return Settings(
         bot_token=bot_token,

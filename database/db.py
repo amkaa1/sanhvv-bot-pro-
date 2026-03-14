@@ -1,4 +1,3 @@
-import os
 from collections.abc import AsyncIterator
 
 from sqlalchemy.ext.asyncio import (
@@ -8,16 +7,15 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-# 1️⃣ Railway environment variable авах
-DATABASE_URL = os.getenv("DATABASE_URL")
+from config import settings
 
-# 2️⃣ asyncpg driver ашиглах
-if DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+# Use asyncpg driver: postgresql:// -> postgresql+asyncpg://
+_database_url = settings.database_url
+if _database_url.startswith("postgresql://") and "+asyncpg" not in _database_url:
+    _database_url = _database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
-# 3️⃣ engine үүсгэх
 engine: AsyncEngine = create_async_engine(
-    DATABASE_URL,
+    _database_url,
     echo=False,
     pool_pre_ping=True,
 )
