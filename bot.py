@@ -6,7 +6,7 @@ from config import BOT_TOKEN
 
 from database.db import connect
 from database.models import create_tables
-
+from handlers import join
 from handlers import start
 from handlers import invite
 from handlers import profile
